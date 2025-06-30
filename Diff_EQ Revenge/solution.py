@@ -19,11 +19,39 @@ g_samples = [
     (13, 15270867.949549)
 ]
 
-# Function to recover ASCII values
-def recover_ascii(samples):
-    poly = interpolate(samples, x)
-    poly = simplify(poly)
+def newton_interpolation(samples):
+    n = len(samples)
+    x_vals = [pt[0] for pt in samples]
+    y_vals = [pt[1] for pt in samples]
 
+    # Create divided difference table
+    divided_diff = [y_vals[:]]  # First row is y-values
+    for i in range(1, n):
+        row = []
+        for j in range(n - i):
+            numerator = divided_diff[i - 1][j + 1] - divided_diff[i - 1][j]
+            denominator = x_vals[j + i] - x_vals[j]
+            row.append(numerator / denominator)
+        divided_diff.append(row)
+
+    # Construct polynomial using sympy
+    from sympy import symbols, simplify
+    x = symbols('x')
+    polynomial = divided_diff[0][0]
+    term = 1
+    for i in range(1, n):
+        term *= (x - x_vals[i - 1])
+        polynomial += divided_diff[i][0] * term
+
+    return simplify(polynomial)
+
+from sympy import symbols, diff, simplify
+from sympy.abc import x
+
+# Use the same f_samples and g_samples as in your code
+
+def recover_ascii_custom(samples):
+    poly = newton_interpolation(samples)
     ascii_vals = []
     for i in range(13):
         deriv = diff(poly, x, i)
@@ -31,11 +59,9 @@ def recover_ascii(samples):
         ascii_vals.append(round(val))
     return ascii_vals
 
-# Recover both halves of the flag
-ascii_f = recover_ascii(f_samples)
-ascii_g = recover_ascii(g_samples)
+ascii_f = recover_ascii_custom(f_samples)
+ascii_g = recover_ascii_custom(g_samples)
 
-# Print ASCII values and flag
 print("ASCII F:", ascii_f, "→", ''.join(chr(c) for c in ascii_f))
 print("ASCII G:", ascii_g, "→", ''.join(chr(c) for c in ascii_g))
 
