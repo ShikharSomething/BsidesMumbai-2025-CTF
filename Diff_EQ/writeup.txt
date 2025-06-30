@@ -1,0 +1,1 @@
+There are various checks in the binary which you have to replicate as it is in python as shown in the sol.py and then you can use z3 to solve this and you will get the flag.
