@@ -1,0 +1,1 @@
+Basic Image Hex Height editing, open the challenge.png in cyberchef and convert the contents to hex, then edit the Height bytes from the hex to something large and you would get solved.png. You can replace the use of cyberchef with any hex editor you like.
